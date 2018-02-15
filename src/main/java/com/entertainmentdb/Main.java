@@ -16,6 +16,11 @@
 
 package com.entertainmentdb;
 
+import static javax.measure.unit.SI.KILOGRAM;
+import javax.measure.quantity.Mass;
+import org.jscience.physics.model.RelativisticModel;
+import org.jscience.physics.amount.Amount;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +88,14 @@ public class Main {
       config.setJdbcUrl(dbUrl);
       return new HikariDataSource(config);
     }
+  }
+  
+  @RequestMapping("/hello")
+  String hello(Map<String, Object> model) {
+	  RelativisticModel.select();
+	  Amount<Mass> m = Amount.valueOf("12 GeV").to(KILOGRAM);
+	  model.put("science", "E=mc^2: 12 GeV = " + m.toString());
+	  return "hello";
   }
 
 }

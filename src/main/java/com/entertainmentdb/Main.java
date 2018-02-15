@@ -58,21 +58,25 @@ public class Main {
     return "index";
   }
 
-  @RequestMapping("/db")
+  @RequestMapping("/movies")
   String db(Map<String, Object> model) {
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-      stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-      ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS movies (id int,"
+      		+ "name VARCHAR(256),"
+      		+ "genre VARCHAR(256),"
+      		+ "length int,"
+      		+ "release int)");
+//      stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
+      ResultSet rs = stmt.executeQuery("SELECT * FROM movies");
 
       ArrayList<String> output = new ArrayList<String>();
-      while (rs.next()) {
+//      while (rs.next()) {
         output.add("Read from DB: " + rs.getTimestamp("tick"));
-      }
+//      }
 
       model.put("records", output);
-      return "db";
+      return "movies";
     } catch (Exception e) {
       model.put("message", e.getMessage());
       return "error";
@@ -93,8 +97,12 @@ public class Main {
   @RequestMapping("/hello")
   String hello(Map<String, Object> model) {
 	  RelativisticModel.select();
-	  Amount<Mass> m = Amount.valueOf("12 GeV").to(KILOGRAM);
-	  model.put("science", "E=mc^2: 12 GeV = " + m.toString());
+	  String energy = System.getenv().get("ENERGY");
+	  if (energy == null) {
+		  energy = "12 GeV";
+	  }
+	  Amount<Mass> m = Amount.valueOf(energy).to(KILOGRAM);
+	  model.put("science", "E=mc^2: " + energy + " = " + m.toString());
 	  return "hello";
   }
 
